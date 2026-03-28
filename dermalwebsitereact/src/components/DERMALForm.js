@@ -44,7 +44,20 @@ function DERMALForm(){
     }
 
     function handleSubmit(e){
+        e.preventDefault();
+
+        const api=axios.create({
+            baseURL:"http://localhost:8000/runDERMAL/",
+            withCredentials: true
+        })
+
+        api.interceptors.request.use(config => {  
+            config.headers['X-CSRFToken'] = csrfToken;  
+            return config;  
+        }); 
+
         
+        api.post('',JSON.stringify({name:name}))
     }
 
     return(
@@ -52,24 +65,24 @@ function DERMALForm(){
             <h3>Upload image and symptoms</h3>
             <form>
                 <label for="cname">Upload an image:</label><br></br>
-                <input type="file"></input><br></br>
+                <input type="file" onChange={handleChange}></input><br></br>
                 <label>Enter your symptoms/location:</label><br></br>
 
                 {labelTitles.map(element => (
                     <li>
-                        <label>{element}:</label><br></br>
-                        <input type="checkbox"></input><br></br>
+                        <label>{element}:</label>
+                        <input type="checkbox" onChange={handleChange}></input><br></br>
                     </li>
                 ))}
                 
                 <label>duration:</label><br></br>
-                <select name="cars" id="cars">
+                <select name="duration" id="duration">
                     {duration.map(element => (
-                        <option value={element}>{element}</option>
+                        <option value={element} onChange={handleChange}>{element}</option>
                     ))}
-                </select>
+                </select><br></br>
                 
-
+                <input type="submit" value="Submit"></input>
             </form>
         </div>
     )
