@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 function DERMALForm(){
     const csrfToken = Cookies.get('csrftoken')
     const [name,setName]=useState("")
+    
     const labelTitles=['textures_raised_or_bumpy',
        'textures_flat', 'textures_rough_or_flaky', 'textures_fluid_filled',
        'body_parts_head_or_neck', 'body_parts_arm', 'body_parts_palm',
@@ -34,10 +35,6 @@ function DERMALForm(){
         'MORE_THAN_FIVE_YEARS',
         'SINCE_CHILDHOOD',
     ]
-
-    function formCheckBoxes(value,index,array){
-        ''
-    }
 
     function handleChange(e){
         setName(e.target.value);
