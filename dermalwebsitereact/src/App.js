@@ -3,10 +3,8 @@ import axios from 'axios';
 import './App.css';
 import DERMALForm from './components/DERMALForm';
 
-
+//create the homepage
 function App() {
-    const [tasks,setTasks]=useState([]);
-
 
   return (
     <div className="App">

@@ -4,10 +4,20 @@ import Cookies from 'js-cookie';
 
 
 function DERMALForm(){
+    //define constants
+    //csrfToken for Django API authentication
     const csrfToken = Cookies.get('csrftoken')
-    const [name,setName]=useState("")
-    
-    const labelTitles=['textures_raised_or_bumpy',
+    //for image input
+    const [image,setImage]=useState("")
+    //for duration input
+    const [duration,setDuration]=useState('UNKNOWN')
+    //to track symptoms
+    const [symptoms,setSymptoms]=useState(
+        {truesymptoms:[]}
+    )
+
+    //list of symptoms for creating the form
+    const symptomTitles=['textures_raised_or_bumpy',
        'textures_flat', 'textures_rough_or_flaky', 'textures_fluid_filled',
        'body_parts_head_or_neck', 'body_parts_arm', 'body_parts_palm',
        'body_parts_back_of_hand', 'body_parts_torso_front',
@@ -24,7 +34,8 @@ function DERMALForm(){
        'other_symptoms_shortness_of_breath',
        'other_symptoms_no_relevant_symptoms']
 
-    const duration=[
+    //list of durations for creating the form
+    const durationTitles=[
         'UNKNOWN',
         'ONE_DAY',
         'LESS_THAN_ONE_WEEK',
@@ -36,13 +47,66 @@ function DERMALForm(){
         'SINCE_CHILDHOOD',
     ]
 
-    function handleChange(e){
-        setName(e.target.value);
+    //for handling the change of images and duration, simply take what the new value is
+    //and apply it to our state
+    function handleImageChange(e){
+        setImage(e.target.value);
     }
+    function handleDurationChange(e){
+        setDuration(e.target.value);
+    }
+
+    //track the state of each checkbox
+    function handleSymptomChange(e){
+        //delare value as the target input
+        const {value,checked}=e.target;
+        //"import" the currently tracked symptoms
+        const {truesymptoms}=symptoms
+        
+        //if the input checkbox is being checked,
+        //add the input checkbox value to the tracked symptom array
+        if (checked)(
+            setSymptoms({
+                truesymptoms:[...truesymptoms,value]
+            })
+        );
+
+        //otherwise remove it
+        else(
+            setSymptoms({
+                truesymptoms:truesymptoms.filter(
+                    e=>e!==value
+                )
+            })
+        );
+    }
+     
+
+    function formatSymptoms(){
+        //create the object we will return with prefromatted dict
+        const symptomTracker={};
+        
+
+        symptomTitles.forEach(
+            function ifIn(item, index, arr){
+            
+            if (symptoms.truesymptoms.includes(item)){
+                symptomTracker[item]=true
+            }
+            else{
+                symptomTracker[item]=false
+            }
+        });
+        return(symptomTracker)
+    }
+    
 
     function handleSubmit(e){
         e.preventDefault();
 
+        
+
+        //create an API post request to django
         const api=axios.create({
             baseURL:"http://localhost:8000/runDERMAL/",
             withCredentials: true
@@ -52,9 +116,8 @@ function DERMALForm(){
             config.headers['X-CSRFToken'] = csrfToken;  
             return config;  
         }); 
-
-        
-        api.post('',JSON.stringify({name:name}))
+        //
+        api.post('',JSON.stringify({image:image,symptoms:formatSymptoms(),duration:duration}))
     }
 
     return(
@@ -62,20 +125,19 @@ function DERMALForm(){
             <h3>Upload image and symptoms</h3>
             <form>
                 <label for="cname">Upload an image:</label><br></br>
-                <input type="file" onChange={handleChange}></input><br></br>
+                <input type="file" value={image} onChange={handleImageChange}></input><br></br>
                 <label>Enter your symptoms/location:</label><br></br>
-
-                {labelTitles.map(element => (
-                    <li>
+                {symptomTitles.map(element => (
+                    <div>
                         <label>{element}:</label>
-                        <input type="checkbox" onChange={handleChange}></input><br></br>
-                    </li>
+                        <input type="checkbox" value={element} onChange={handleSymptomChange}></input><br></br>
+                    </div>
                 ))}
                 
                 <label>duration:</label><br></br>
-                <select name="duration" id="duration">
-                    {duration.map(element => (
-                        <option value={element} onChange={handleChange}>{element}</option>
+                <select name="duration" id="duration" onChange={handleDurationChange}>
+                    {durationTitles.map(element => (
+                        <option value={element} >{element}</option>
                     ))}
                 </select><br></br>
                 
