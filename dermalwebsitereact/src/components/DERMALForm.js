@@ -31,8 +31,7 @@ function DERMALForm(){
        'condition_symptoms_no_relevant_experience', 'other_symptoms_fever',
        'other_symptoms_chills', 'other_symptoms_fatigue',
        'other_symptoms_joint_pain', 'other_symptoms_mouth_sores',
-       'other_symptoms_shortness_of_breath',
-       'other_symptoms_no_relevant_symptoms']
+       'other_symptoms_shortness_of_breath']
 
     //list of durations for creating the form
     const durationTitles=[
@@ -50,7 +49,7 @@ function DERMALForm(){
     //for handling the change of images and duration, simply take what the new value is
     //and apply it to our state
     function handleImageChange(e){
-        setImage(e.target.value);
+        setImage(e.target.files[0]);
     }
     function handleDurationChange(e){
         setDuration(e.target.value);
@@ -102,9 +101,15 @@ function DERMALForm(){
     
 
     function handleSubmit(e){
-        e.preventDefault();
+        e.preventDefault(); //Prevent default form submissions
 
-        
+        //require an image to submit form
+        if (!image){
+            alert("select an image file");
+            return;
+        }
+
+        const formData= new FormData();
 
         //create an API post request to django
         const api=axios.create({
@@ -116,8 +121,14 @@ function DERMALForm(){
             config.headers['X-CSRFToken'] = csrfToken;  
             return config;  
         }); 
-        //
-        api.post('',JSON.stringify({image:image,symptoms:formatSymptoms(),duration:duration}))
+
+        formData.append("symptoms",JSON.stringify(formatSymptoms()))
+        
+        formData.append("image",image)
+        
+        formData.append("duration",duration)
+        
+        api.post('',formData)
     }
 
     return(
@@ -125,7 +136,7 @@ function DERMALForm(){
             <h3>Upload image and symptoms</h3>
             <form>
                 <label for="cname">Upload an image:</label><br></br>
-                <input type="file" value={image} onChange={handleImageChange}></input><br></br>
+                <input type="file" accept="image/*" onChange={handleImageChange}></input><br></br>
                 <label>Enter your symptoms/location:</label><br></br>
                 {symptomTitles.map(element => (
                     <div>

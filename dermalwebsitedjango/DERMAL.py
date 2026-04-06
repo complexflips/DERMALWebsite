@@ -11,10 +11,10 @@ def makemodel(input):
     
     return prediction
 
-def runDermal(image,symptoms):
+def runDermal(input):
     #make sure image is resized 
-    image=Image(image).resize((256,256))
+    image=(input[0]).resize((256,256))
     #format the image for use in keras model
     imageArray=np.array(image) / 255.0
 
-    return(makemodel([np.array([imageArray]),np.array([symptoms])]))
+    return(makemodel([np.array([imageArray]),np.array([input[1]])]))
