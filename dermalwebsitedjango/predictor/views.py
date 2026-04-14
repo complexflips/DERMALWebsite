@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from sklearn.preprocessing import OrdinalEncoder
+from django.template.loader import get_template
 import numpy as np
 import json
 from PIL import Image
@@ -26,8 +27,15 @@ def encodeDuration(duration):
 
     return encoder.fit_transform(np.array(duration).reshape(1, -1))
 
+def formatOutput(rawOutput):
+    formattedOutput=[]
+    for i in rawOutput:
+        i=i.round()
+        if i:
+            pass
 
-@api_view(('POST',))
+
+@api_view(('POST','GET'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def formSubmitted(request):
     if request.method=='POST':
@@ -43,10 +51,12 @@ def formSubmitted(request):
 
         input=[image,np.concatenate((np.array(symptoms),np.array(duration[0])))]
 
-        output=runDermal(input)
+        rawOutput=runDermal(input)
 
-        print(output)
+        formatOutput(rawOutput[0])
 
-        return Response("POST registered")
-    else:
-        return HttpResponse("invalid request")
+        template = get_template('response.html')
+
+        return HttpResponse('test')
+    if request.method=='GET':
+        return HttpResponse("Incorrect ")

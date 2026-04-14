@@ -122,13 +122,26 @@ function DERMALForm(){
             return config;  
         }); 
 
-        formData.append("symptoms",JSON.stringify(formatSymptoms()))
+        formData.append("symptoms",JSON.stringify(formatSymptoms()));
         
-        formData.append("image",image)
+        formData.append("image",image);
         
-        formData.append("duration",duration)
+        formData.append("duration",duration);
         
         api.post('',formData)
+        .then(function (response) {
+            console.log(response)
+        });
+        
+
+
+        //callRestAPI();
+    }
+
+    function callRestAPI(){
+        const restEndpoint="http://localhost:8000/runDERMAL/"
+        const response = fetch(restEndpoint);
+        console.log(response)
     }
 
     return(
@@ -154,6 +167,8 @@ function DERMALForm(){
                 
                 <input type="submit" value="Submit"></input>
             </form>
+
+            <p></p>
         </div>
     )
 }
