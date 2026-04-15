@@ -1,6 +1,6 @@
-import { useState } from "react";
 import axios from "axios";
 import Cookies from 'js-cookie';
+import React, { useState, useEffect } from 'react';
 
 
 function DERMALForm(){
@@ -15,7 +15,7 @@ function DERMALForm(){
     const [symptoms,setSymptoms]=useState(
         {truesymptoms:[]}
     )
-
+    const [DERMALResponse, setDERMALResponse] = useState("");
     //list of symptoms for creating the form
     const symptomTitles=['textures_raised_or_bumpy',
        'textures_flat', 'textures_rough_or_flaky', 'textures_fluid_filled',
@@ -99,6 +99,9 @@ function DERMALForm(){
         return(symptomTracker)
     }
     
+    function handleResponseChange(e){
+        setDERMALResponse(e)
+    }
 
     function handleSubmit(e){
         e.preventDefault(); //Prevent default form submissions
@@ -129,20 +132,13 @@ function DERMALForm(){
         formData.append("duration",duration);
         
         api.post('',formData)
-        .then(function (response) {
-            console.log(response)
-        });
+        .then(response => handleResponseChange(response.data)
+            
+        );
         
 
-
-        //callRestAPI();
     }
 
-    function callRestAPI(){
-        const restEndpoint="http://localhost:8000/runDERMAL/"
-        const response = fetch(restEndpoint);
-        console.log(response)
-    }
 
     return(
         <div id="form" method='post' onSubmit={handleSubmit} >
@@ -168,7 +164,7 @@ function DERMALForm(){
                 <input type="submit" value="Submit"></input>
             </form>
 
-            <p></p>
+            <p>{DERMALResponse}</p>
         </div>
     )
 }

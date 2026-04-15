@@ -5,11 +5,12 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
 from django.template.loader import get_template
 import numpy as np
 import json
 from PIL import Image
+import pickle
 
 def encodeDuration(duration):
     #to run the model, I require duration to be encoded
@@ -30,9 +31,12 @@ def encodeDuration(duration):
 def formatOutput(rawOutput):
     formattedOutput=[]
     for i in rawOutput:
-        i=i.round()
-        if i:
-            pass
+        i=np.round(i)
+        formattedOutput.append(i)
+
+    encoder=pickle.load(open('multiencoder.pkl','rb'))
+
+    return (encoder.inverse_transform(np.array([np.array(formattedOutput)]))[0])
 
 
 @api_view(('POST','GET'))
@@ -53,10 +57,8 @@ def formSubmitted(request):
 
         rawOutput=runDermal(input)
 
-        formatOutput(rawOutput[0])
+        output=formatOutput(rawOutput[0])
 
-        template = get_template('response.html')
-
-        return HttpResponse('test')
+        return HttpResponse(output)
     if request.method=='GET':
-        return HttpResponse("Incorrect ")
+        return HttpResponse("Incorrect Request Type")
