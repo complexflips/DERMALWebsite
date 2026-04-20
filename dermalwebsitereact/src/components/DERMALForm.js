@@ -1,6 +1,6 @@
 import axios from "axios";
 import Cookies from 'js-cookie';
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 
 function DERMALForm(){
@@ -17,33 +17,35 @@ function DERMALForm(){
     )
     const [DERMALResponse, setDERMALResponse] = useState("");
     //list of symptoms for creating the form
-    const symptomTitles=['textures_raised_or_bumpy',
-       'textures_flat', 'textures_rough_or_flaky', 'textures_fluid_filled',
-       'body_parts_head_or_neck', 'body_parts_arm', 'body_parts_palm',
-       'body_parts_back_of_hand', 'body_parts_torso_front',
-       'body_parts_torso_back', 'body_parts_genitalia_or_groin',
-       'body_parts_buttocks', 'body_parts_leg', 'body_parts_foot_top_or_side',
-       'body_parts_foot_sole', 'body_parts_other',
-       'condition_symptoms_bothersome_appearance',
-       'condition_symptoms_bleeding', 'condition_symptoms_increasing_size',
-       'condition_symptoms_darkening', 'condition_symptoms_itching',
-       'condition_symptoms_burning', 'condition_symptoms_pain',
-       'condition_symptoms_no_relevant_experience', 'other_symptoms_fever',
-       'other_symptoms_chills', 'other_symptoms_fatigue',
-       'other_symptoms_joint_pain', 'other_symptoms_mouth_sores',
-       'other_symptoms_shortness_of_breath']
+    const symptomTitles=['Is the texture raised or bumpy?',
+       'Is the texture flat?', 'Is the texture rough or flaky?', 'Is this fluid filled?',
+       'Is the affected region on your head or neck?', 'Is the affected region on your arm?',
+       'Is the affected region on your palm?',
+       'Is the affected region on the back of your hand?', 'Is the affected region on the front of your torso?',
+       'Is the affected region on the back of your torso', 'Is the affected region on your genetalia or groin?',
+       'Is the affected region on your buttox?', 'Is the affected region on your leg?', 
+       'Is the affected region on the top or side of your foot?',
+       'Is the affected region on the sole of your foot?', 'Is the affected region a body part not listed',
+       'Does the condition cause a bothersome apperance',
+       'Does the condition cause bleeding', 'Does the condition have an increasing size',
+       'Does the condition cause a darkening of the skin', 'Does the condition cause itching',
+       'Does the condition cause a burning sensation', 'Does the condition cause pain',
+       'I did not experience any of the above symptoms', 'This condition has given me a fever',
+       'This condition has given me a chills', 'This condition has given me fatigue',
+       'This condition has given me joint pain', 'This condition has given me mouth sores',
+       'This condition has given me shortness of breath']
 
     //list of durations for creating the form
     const durationTitles=[
-        'UNKNOWN',
-        'ONE_DAY',
-        'LESS_THAN_ONE_WEEK',
-        'ONE_TO_FOUR_WEEKS',
-        'ONE_TO_THREE_MONTHS',
-        'THREE_TO_TWELVE_MONTHS',
-        'MORE_THAN_ONE_YEAR',
-        'MORE_THAN_FIVE_YEARS',
-        'SINCE_CHILDHOOD',
+        'Unknown',
+        'One Day',
+        'Less Than One Week',
+        'One to Four Weeks',
+        'One to Thee Months',
+        'Three to Twelve Months',
+        'More Than One Year',
+        'More Than Five Years',
+        'Since Childhood',
     ]
 
     //for handling the change of images and duration, simply take what the new value is
@@ -105,7 +107,7 @@ function DERMALForm(){
 
     function handleSubmit(e){
         e.preventDefault(); //Prevent default form submissions
-
+        handleResponseChange("")
         //require an image to submit form
         if (!image){
             alert("select an image file");
@@ -135,36 +137,43 @@ function DERMALForm(){
         .then(response => handleResponseChange(response.data)
             
         );
-        
+        if (DERMALResponse===""){
+            handleResponseChange("none")
+        }
 
     }
 
 
     return(
-        <div id="form" method='post' onSubmit={handleSubmit} >
+        <div id="main" method='post' onSubmit={handleSubmit} >
             <h3>Upload image and symptoms</h3>
             <form>
-                <label for="cname">Upload an image:</label><br></br>
-                <input type="file" accept="image/*" onChange={handleImageChange}></input><br></br>
-                <label>Enter your symptoms/location:</label><br></br>
-                {symptomTitles.map(element => (
-                    <div>
-                        <label>{element}:</label>
-                        <input type="checkbox" value={element} onChange={handleSymptomChange}></input><br></br>
+                <div id='mainForm'>
+                    <div class='formItem'>
+                        <input type="file" accept="image/*" onChange={handleImageChange}></input><br></br>    
                     </div>
-                ))}
-                
-                <label>duration:</label><br></br>
-                <select name="duration" id="duration" onChange={handleDurationChange}>
-                    {durationTitles.map(element => (
-                        <option value={element} >{element}</option>
+                    {symptomTitles.map(element => (
+                        <div key={element} class='formItem'>
+                            <label>{element}:</label>
+                            <input type="checkbox" value={element} onChange={handleSymptomChange}></input><br></br>
+                        </div>
                     ))}
-                </select><br></br>
-                
-                <input type="submit" value="Submit"></input>
+                    <div class='formItem'>
+                        <label>The Duration of This Condition is: </label>    
+                        <select name="duration" id="duration" onChange={handleDurationChange}>
+                            {durationTitles.map(element => (
+                                <option value={element} key={element}>{element}</option>
+                            ))}
+                        </select><br></br>
+                    </div>
+                    <div class='formbutton'>
+                        <input type="submit" value="Submit"></input>
+                    </div>
+                </div>
             </form>
 
             <p>{DERMALResponse}</p>
+
         </div>
     )
 }

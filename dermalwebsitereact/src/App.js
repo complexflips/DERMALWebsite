@@ -1,5 +1,3 @@
-import React, {useState,useEffect} from 'react';
-import axios from 'axios';
 import './App.css';
 import DERMALForm from './components/DERMALForm';
 
@@ -8,7 +6,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>DERMAL</h1>
+      <header><h1>DERMAL</h1></header>
         
       <DERMALForm />
            

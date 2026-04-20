@@ -5,9 +5,74 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: beige;
+}
+
+h1{
+  margin: 0;
+  padding-bottom: .5em;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+header{
+  background-color: bisque;
+}
+
+form{
+  column-count: 1;
+  background-color: azure;
+  margin: 3em;
+  margin-top: auto;
+  padding-bottom: 2em;
+  padding-top: 2em;
+}
+
+#mainForm{
+  display: grid;
+  justify-items: center;
+  
+}
+
+#main{
+  background-color: lightgray;
+  margin: 3em;
+  margin-top: auto;
+  padding-bottom: 1em;
+}
+
+.formItem{
+  border-style: solid;
+  border-width: 2px;
+  margin: .10em;
+  padding: .1em;
+  padding-bottom: .15em;
+  width: 500px;
+}
+
+.formHeader{
+  border-style: solid;
+  font-weight: bold;
+  border-width: 2px;
+  margin: .5em;
+  padding: .1em;
+  width: 500px;
+}
+
+
+
+@media (min-width: 1250px) { 
+		#mainForm{
+      grid-template-columns: auto auto;
+      
+    }
+}
+@media (min-width: 1750px) { 
+    #mainForm{
+      grid-template-columns: auto auto auto;
+      
+    }
 }
