@@ -30,12 +30,12 @@ function DERMALForm(){
        'Does the condition cause bleeding', 'Does the condition have an increasing size',
        'Does the condition cause a darkening of the skin', 'Does the condition cause itching',
        'Does the condition cause a burning sensation', 'Does the condition cause pain',
-       'I did not experience any of the above symptoms', 'This condition has given me a fever',
+       'I have symptoms not listed', 'This condition has given me a fever',
        'This condition has given me a chills', 'This condition has given me fatigue',
        'This condition has given me joint pain', 'This condition has given me mouth sores',
        'This condition has given me shortness of breath']
 
-    //list of durations for creating the form
+    //list of durations for creating the text of the form
     const durationTitles=[
         'Unknown',
         'One Day',
@@ -134,7 +134,7 @@ function DERMALForm(){
         formData.append("duration",duration);
         
         api.post('',formData)
-        .then(response => handleResponseChange(response.data)
+        .then(response => handleResponseChange(JSON.stringify(response.data))
             
         );
         if (DERMALResponse===""){
@@ -147,6 +147,10 @@ function DERMALForm(){
     return(
         <div id="main" method='post' onSubmit={handleSubmit} >
             <h3>Upload image and symptoms</h3>
+            <p>DERMAL is an image recognition algorithm that is able to give a preliminary diagnosis on several skin conditions. </p>
+            <p>The following condition are the condition DERMAL is trained to identify: Allergic Contact Dermatitis, Insect Bite, Urticaria, Folliculitis, 
+                Tinea versicolor, Herpes Zoster/Shingles, Irritant Contact Dermatitis, and Atopic dermatitis (eczema)
+            </p>
             <form>
                 <div id='mainForm'>
                     <div class='formItem'>
