@@ -31,6 +31,20 @@ form{
   padding-top: 2em;
 }
 
+th{
+  border-style: solid;
+  border-width: 0;
+  border-bottom-width: 2px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+tr:nth-child(odd){background-color: darkgray;}
+
+td{
+  border: 1px solid #ddd;
+  padding: 4px;
+}
+
 #mainForm{
   display: grid;
   justify-items: center;
@@ -74,5 +88,10 @@ form{
     #mainForm{
       grid-template-columns: auto auto auto;
       
+    }
+    table{
+      padding-left: 10%;
+      padding-right: 10%;
+      padding-bottom: 5em;
     }
 }

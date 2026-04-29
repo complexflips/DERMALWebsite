@@ -10,12 +10,12 @@ function DERMALForm(){
     //for image input
     const [image,setImage]=useState("")
     //for duration input
-    const [duration,setDuration]=useState('UNKNOWN')
+    const [duration,setDuration]=useState('Unknown')
     //to track symptoms
     const [symptoms,setSymptoms]=useState(
         {truesymptoms:[]}
     )
-    const [DERMALResponse, setDERMALResponse] = useState("");
+    const [DERMALResponse, setDERMALResponse] = useState(null);
     //list of symptoms for creating the form
     const symptomTitles=['Is the texture raised or bumpy?',
        'Is the texture flat?', 'Is the texture rough or flaky?', 'Is this fluid filled?',
@@ -53,6 +53,7 @@ function DERMALForm(){
     function handleImageChange(e){
         setImage(e.target.files[0]);
     }
+    //track the state of the duration
     function handleDurationChange(e){
         setDuration(e.target.value);
     }
@@ -82,7 +83,7 @@ function DERMALForm(){
         );
     }
      
-
+    //format symptoms to give to backend
     function formatSymptoms(){
         //create the object we will return with prefromatted dict
         const symptomTracker={};
@@ -101,13 +102,15 @@ function DERMALForm(){
         return(symptomTracker)
     }
     
+    //update the response area that gives condition list
     function handleResponseChange(e){
         setDERMALResponse(e)
     }
 
     function handleSubmit(e){
         e.preventDefault(); //Prevent default form submissions
-        handleResponseChange("")
+        //clear previous output
+        handleResponseChange({})
         //require an image to submit form
         if (!image){
             alert("select an image file");
@@ -121,26 +124,54 @@ function DERMALForm(){
             baseURL:"http://localhost:8000/runDERMAL/",
             withCredentials: true
         })
-
+        //create a request token so django backend views request as valid
         api.interceptors.request.use(config => {  
             config.headers['X-CSRFToken'] = csrfToken;  
             return config;  
         }); 
 
+        //add the data to the formData variable
         formData.append("symptoms",JSON.stringify(formatSymptoms()));
         
         formData.append("image",image);
         
         formData.append("duration",duration);
         
+        //send formData as a POST request to backend, and wait for response
         api.post('',formData)
-        .then(response => handleResponseChange(JSON.stringify(response.data))
+        .then(response => handleResponseChange(response.data)
             
         );
         if (DERMALResponse===""){
             handleResponseChange("none")
         }
 
+    }
+
+    function MakeConditionTable(){
+        if (DERMALResponse){
+            return(
+                <table key={"table"}>
+                    <thead key={"table head"}>
+                        <tr key={"header row"}>
+                            <th key={"likelihood header"}>Likelihood</th>
+                            <th key={"name header"}>Condition Name</th>
+                            <th key={"description header"}>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody key={"table body"}>
+                        {Object.entries(DERMALResponse).map(element => (
+                                
+                                <tr key={element}>
+                                    <td key={element[1].likelihood}>{(element[1].likelihood)}</td>
+                                    <td key={element[1].condition}>{(element[1].condition)}</td>
+                                    <td key={element[1].description}>{(element[1].description)}</td>
+                                </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )
+        }
     }
 
 
@@ -153,16 +184,17 @@ function DERMALForm(){
             </p>
             <form>
                 <div id='mainForm'>
-                    <div class='formItem'>
+                    <div className='formItem'>
+                        <label>Upload an image of the affected area:</label><br></br>
                         <input type="file" accept="image/*" onChange={handleImageChange}></input><br></br>    
                     </div>
                     {symptomTitles.map(element => (
-                        <div key={element} class='formItem'>
+                        <div key={element} className='formItem'>
                             <label>{element}:</label>
                             <input type="checkbox" value={element} onChange={handleSymptomChange}></input><br></br>
                         </div>
                     ))}
-                    <div class='formItem'>
+                    <div className='formItem'>
                         <label>The Duration of This Condition is: </label>    
                         <select name="duration" id="duration" onChange={handleDurationChange}>
                             {durationTitles.map(element => (
@@ -170,13 +202,15 @@ function DERMALForm(){
                             ))}
                         </select><br></br>
                     </div>
-                    <div class='formbutton'>
+                    <div className='formbutton'>
                         <input type="submit" value="Submit"></input>
                     </div>
                 </div>
             </form>
-
-            <p>{DERMALResponse}</p>
+            
+            <MakeConditionTable/>
+            
+            <footer>DERMAL is not a replacement for a dermatologist, DERMAL cannot give a diagnosis, if you are experiencing a medical emergency please contact emergency services.</footer>
 
         </div>
     )
